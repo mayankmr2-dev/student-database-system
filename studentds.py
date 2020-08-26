@@ -21,24 +21,33 @@ def Connectdb():
         host = Hostval.get()
         user = Userval.get()
         password = Passwordval.get()
+
         try:
             conn = pyodbc.connect("Driver={ODBC Driver 17 for SQL Server};"  # For Connection
-                                  f"Server={host};"
+                                  "Server=49.50.100.159,5263;"
                                   "Database=practicemk;"
-                                  f"Uid={user};"
-                                  f"Pwd={password};")
+                                  "Uid=mayankmr2;"
+                                  "Pwd=Mayan@1198;")
             cursor = conn.cursor()
-            query1 = "create table studentdata(id int not null primary key,name varchar(20),mobile varchar(12),email varchar(30),address varchar(40),gender varchar(10),dob varchar(20),date varchar(30),time varchar(30))"
-            cursor.execute(query1)
-            cursor.commit()
-            messagebox.showinfo(
-                'Information', 'Successful')
-            dbroot.destroy()
-
+# cursor.close()
         except:
             messagebox.showerror(
-                'Notifications', 'Input data is Invalid !\nTry again')
+                'Information', 'Invalid Input !', parent=dbroot)
             return
+        try:
+            query1 = "create table studentdata(id int not null primary key,name varchar(20),mobile varchar(12),email varchar(30),address varchar(40),gender varchar(10),dob varchar(20),date varchar(30),time varchar(30))"
+            cursor.execute(query1)
+            conn.commit()  # Important
+
+            dbroot.destroy()
+        except:
+            stconnect = "use practicemk"
+            cursor.execute(stconnect)
+            messagebox.showinfo("Notifications", "Already Created !")
+            dbroot.destroy()
+            # messagebox.showerror(
+            #     'Notifications', 'Input data is Invalid !\nTry again', parent=dbroot)
+            # return
 
     dbroot = Toplevel()
     dbroot.grab_set()
@@ -82,8 +91,47 @@ def Connectdb():
 
 def AddStudent():
     def submitadd():
-        # nameentry.get() Student Added Successfully ! Mayan
-        print("Student Added Successfully ! ")
+        id = idval.get()
+        name = nameval.get()
+        mobile = mobileval.get()
+        email = emailval.get()
+        addr = addrval.get()
+        gender = genderval.get()
+        dob = dobval.get()
+        addedtime = time.strftime("%H:%M:%S")
+        addeddate = time.strftime("%d/%m/%Y")
+
+        try:
+            stconnect = "use practicemk"
+            cursor.execute(stconnect)
+            query2 = f"insert into studentdata values(?,?,?,?,?,?,?,?,?)"
+            cursor.execute(query2, (id, name, mobile, email,
+                                    addr, gender, dob, addeddate, addedtime))
+            conn.commit()
+            res = messagebox.askyesnocancel(
+                'Notifications', f'ID {id} Name {name} added successfully\nDo you want to clean the form?', parent=addroot)
+            if (res == True):
+                idval.set('')
+                nameval.set('')
+                mobileval.set('')
+                emailval.set('')
+                addrval.set('')
+                genderval.set('')
+                dobval.set('')
+        except NameError:
+            messagebox.showerror(
+                'Server Error', 'You have not connected to Server', parent=addroot)
+        except:
+            messagebox.showerror(
+                'Notifications', 'ID already registered.', parent=addroot)
+        strr = 'Select * from studentdata'
+        cursor.execute(strr)
+        datas = cursor.fetchall()
+        StudentTable.delete(*StudentTable.get_children())
+        for i in datas:
+            vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+            StudentTable.insert('', END, values=vv)
+
     addroot = Toplevel(master=DataEntryFrame)
     addroot.title('Add Student')
     addroot.grab_set()
@@ -161,7 +209,82 @@ def AddStudent():
 
 def SearchStudent():
     def search():
-        print("Searching ....")
+        id = idval3.get()
+        name = nameval3.get()
+        mobile = mobileval3.get()
+        email = emailval3.get()
+        addr = addrval3.get()
+        gender = genderval3.get()
+        dob = dobval3.get()
+        addeddate = dateval3.get()
+        try:
+            if(id != ''):
+                strsearch = f'select * from studentdata where id={id}'
+                cursor.execute(strsearch)
+                datas = cursor.fetchall()
+                StudentTable.delete(*StudentTable.get_children())
+                for i in datas:
+                    vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+                    StudentTable.insert('', END, values=vv)
+            elif(name != ''):
+                strsearch = f'select * from studentdata where name=?'
+                cursor.execute(strsearch, (name))
+                datas = cursor.fetchall()
+                StudentTable.delete(*StudentTable.get_children())
+                for i in datas:
+                    vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+                    StudentTable.insert('', END, values=vv)
+            elif(mobile != ''):
+                strsearch = f'select * from studentdata where mobile={mobile}'
+                cursor.execute(strsearch)
+                datas = cursor.fetchall()
+                StudentTable.delete(*StudentTable.get_children())
+                for i in datas:
+                    vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+                    StudentTable.insert('', END, values=vv)
+            elif(email != ''):
+                strsearch = f'select * from studentdata where email=?'
+                cursor.execute(strsearch, (email))
+                datas = cursor.fetchall()
+                StudentTable.delete(*StudentTable.get_children())
+                for i in datas:
+                    vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+                    StudentTable.insert('', END, values=vv)
+            elif(addr != ''):
+                strsearch = f'select * from studentdata where address=?'
+                cursor.execute(strsearch, (addr))
+                datas = cursor.fetchall()
+                StudentTable.delete(*StudentTable.get_children())
+                for i in datas:
+                    vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+                    StudentTable.insert('', END, values=vv)
+            elif(gender != ''):
+                strsearch = f'select * from studentdata where gender=?'
+                cursor.execute(strsearch, (gender))
+                datas = cursor.fetchall()
+                StudentTable.delete(*StudentTable.get_children())
+                for i in datas:
+                    vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+                    StudentTable.insert('', END, values=vv)
+            elif(dob != ''):
+                strsearch = f'select * from studentdata where dob=?'
+                cursor.execute(strsearch, (dob))
+                datas = cursor.fetchall()
+                StudentTable.delete(*StudentTable.get_children())
+                for i in datas:
+                    vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+                    StudentTable.insert('', END, values=vv)
+            elif(addeddate != ''):
+                strsearch = f'select * from studentdata where date=?'
+                cursor.execute(strsearch, (addeddate))
+                datas = cursor.fetchall()
+                StudentTable.delete(*StudentTable.get_children())
+                for i in datas:
+                    vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+                    StudentTable.insert('', END, values=vv)
+        except NameError:
+            messagebox.showerror(
+                'Server Error', 'You have not connected to Server', parent=searchroot)
 
     searchroot = Toplevel(master=DataEntryFrame)
     searchroot.title('Search Student')
@@ -245,10 +368,53 @@ def SearchStudent():
     searchroot.mainloop()
 
 
+def DeleteStudent():
+    cc = StudentTable.focus()
+    content = StudentTable.item(cc)
+    pp = content['values'][0]
+    strr = f'delete from studentdata where id={pp}'
+    cursor.execute(strr)
+    conn.commit()
+    messagebox.showinfo('Notification', f'Id {pp} deleted successfully !')
+    strk = 'select * from studentdata'
+    cursor.execute(strk)
+    datas = cursor.fetchall()
+    StudentTable.delete(*StudentTable.get_children())
+    for i in datas:
+        vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+        StudentTable.insert('', END, values=vv)
+
+
 def UpdateStudent():
     def submitupdate():
+        id = idval2.get()
+        name = nameval2.get()
+        mobile = mobileval2.get()
+        email = emailval2.get()
+        addr = addrval2.get()
+        gender = genderval2.get()
+        dob = dobval2.get()
+        addedtime = time.strftime("%H:%M:%S")
+        addeddate = time.strftime("%d/%m/%Y")
+
+        try:
+            strr = 'update studentdata set name=?,mobile=?,email=?,address=?,gender=?,dob=?,date=?,time=? where id=?'
+            cursor.execute(strr, (name, mobile, email, addr,
+                                  gender, dob, addeddate, addedtime, id))
+            conn.commit()
+            messagebox.showinfo(
+                'Notifications', 'Id {} Modified sucessfully...'.format(id), parent=updateroot)
+            strr = 'select *from studentdata'
+            cursor.execute(strr)
+            datas = cursor.fetchall()
+            StudentTable.delete(*StudentTable.get_children())
+            for i in datas:
+                vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+                StudentTable.insert('', END, values=vv)
+        except NameError:
+            messagebox.showerror("Error", "You have not connected to Server")
         # nameentry.get() Student Added Successfully ! Mayan
-        print("Student updated Successfully ! ")
+
     updateroot = Toplevel(master=DataEntryFrame)
     updateroot.title('Update Student')
     updateroot.grab_set()
@@ -331,11 +497,38 @@ def UpdateStudent():
     timeentry = Entry(updateroot, relief=RIDGE, width=20,
                       font=('times', 15), bd=3, textvariable=timeval2)
     timeentry.grid(row=8, column=1, padx=10, pady=15)
-    Submitbtn = Button(updateroot, text="SUBMIT", font=('times', 15, 'bold'), bg="#8080ff",
+    Submitbtn = Button(updateroot, text="UPDATE", font=('times', 15, 'bold'), bg="#8080ff",
                        relief=RIDGE, bd=4, activebackground="#ccb3b8", activeforeground="#80ffff", command=submitupdate)
     Submitbtn.grid(row=9, columnspan=2, padx=20, pady=20)
 
+    cc = StudentTable.focus()
+    content = StudentTable.item(cc)
+    pp = content['values']
+    if (len(pp) != 0):
+        idval2.set(pp[0])
+        nameval2.set(pp[1])
+        mobileval2.set(pp[2])
+        emailval2.set(pp[3])
+        addrval2.set(pp[4])
+        genderval2.set(pp[5])
+        dobval2.set(pp[6])
+        dateval2.set(pp[7])
+        timeval2.set(pp[8])
+
     updateroot.mainloop()
+
+
+def ShowStudent():
+    try:
+        strr = 'select *from studentdata'
+        cursor.execute(strr)
+        datas = cursor.fetchall()
+        StudentTable.delete(*StudentTable.get_children())
+        for i in datas:
+            vv = [i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]]
+            StudentTable.insert('', END, values=vv)
+    except NameError:
+        messagebox.showerror("Error", "You have not connected to Server")
 
 
 def IntroLabelColorTick():
@@ -412,13 +605,13 @@ SearchButton = Button(
     DataEntryFrame, text='2.   Search Student', width=25, font=('times', 18, 'italic'), relief=GROOVE,  bg="#cdd0ae", activebackground="#ccb3b8", activeforegroun="#80ffff", borderwidth=2, command=SearchStudent)
 SearchButton.pack(side=TOP, expand=True)
 DeleteButton = Button(
-    DataEntryFrame, text='3.   Delete Student', width=25, font=('times', 18, 'italic'), relief=GROOVE,  bg="#cdd0ae", activebackground="#ccb3b8", activeforegroun="#80ffff", borderwidth=2)
+    DataEntryFrame, text='3.   Delete Student', width=25, font=('times', 18, 'italic'), relief=GROOVE,  bg="#cdd0ae", activebackground="#ccb3b8", activeforegroun="#80ffff", borderwidth=2, command=DeleteStudent)
 DeleteButton.pack(side=TOP, expand=True)
 UpdateButton = Button(
     DataEntryFrame, text='4.   Update Student', width=25, font=('times', 18, 'italic'), relief=GROOVE,  bg="#cdd0ae", activebackground="#ccb3b8", activeforegroun="#80ffff", borderwidth=2, command=UpdateStudent)
 UpdateButton.pack(side=TOP, expand=True)
 ShowallButton = Button(
-    DataEntryFrame, text='5.   Show All', width=25, font=('times', 18, 'italic'), relief=GROOVE,  bg="#cdd0ae", activebackground="#ccb3b8", activeforegroun="#80ffff", borderwidth=2)
+    DataEntryFrame, text='5.   Show All', width=25, font=('times', 18, 'italic'), relief=GROOVE,  bg="#cdd0ae", activebackground="#ccb3b8", activeforegroun="#80ffff", borderwidth=2, command=ShowStudent)
 ShowallButton.pack(side=TOP, expand=True)
 ExportButton = Button(
     DataEntryFrame, text='6.    Export', width=25, font=('times', 18, 'italic'), relief=GROOVE,  bg="#cdd0ae", activebackground="#ccb3b8", activeforegroun="#80ffff", borderwidth=2)
