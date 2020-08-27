@@ -6,7 +6,7 @@ from tkinter import Toplevel
 from tkinter import messagebox
 import random
 import pyodbc
-
+import os
 
 colors = ['red', 'green', 'yellow', 'pink', 'gold', 'red2']
 # Fonts = ('times',30,'italic/bold) Helvetica,chiller
@@ -17,17 +17,19 @@ colors = ['red', 'green', 'yellow', 'pink', 'gold', 'red2']
 
 def Connectdb():
     def connecteddb():
-        global conn, cursor
+        global conn, cursor, my_server, my_password
         host = Hostval.get()
         user = Userval.get()
         password = Passwordval.get()
+        my_server = os.environ['my_server']
+        my_password = os.environ['my_password']
 
         try:
             conn = pyodbc.connect("Driver={ODBC Driver 17 for SQL Server};"  # For Connection
-                                  "Server=49.50.100.159,5263;"
+                                  f"Server={my_server};"
                                   "Database=practicemk;"
                                   "Uid=mayankmr2;"
-                                  "Pwd=Mayan@1198;")
+                                  f"Pwd={my_password};")
             cursor = conn.cursor()
 # cursor.close()
         except:
