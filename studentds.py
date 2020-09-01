@@ -522,7 +522,7 @@ def UpdateStudent():
 
 def ShowStudent():
     try:
-        strr = 'select *from studentdata'
+        strr = 'select * from studentdata'
         cursor.execute(strr)
         datas = cursor.fetchall()
         StudentTable.delete(*StudentTable.get_children())
@@ -629,7 +629,8 @@ ConnectionButton.place(x=900, y=5, width=200, height=35)
 
 ############## ShowDataFrame ###############
 style = Style()
-style.theme_use("clam")
+# ["aqua", "step", "clam", "alt", "default", "classic"]
+style.theme_use("classic")
 style.configure('Treeview.Heading', font=(
     'chiller', 20, 'bold'), foreground='black')
 style.configure('Treeview', font=(
